@@ -1,0 +1,3 @@
+[workspace]
+members = ["dns-core", "dns-client", "dns-server"]
+resolver = "2"
