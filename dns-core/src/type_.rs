@@ -73,6 +73,29 @@ impl TryFrom<u16> for Type {
     }
 }
 
+impl From<Type> for u16 {
+    fn from(value: Type) -> Self {
+        match value {
+            Type::A => 1,
+            Type::NS => 2,
+            Type::MD => 3,
+            Type::MF => 4,
+            Type::CNAME => 5,
+            Type::SOA => 6,
+            Type::MB => 7,
+            Type::MG => 8,
+            Type::MR => 9,
+            Type::NULL => 10,
+            Type::WKS => 11,
+            Type::PTR => 12,
+            Type::HINFO => 13,
+            Type::MINFO => 14,
+            Type::MX => 15,
+            Type::TXT => 16,
+        }
+    }
+}
+
 /// QTYPE fields appear in the question part of a query. QTYPES are a
 /// superset of TYPEs, hence all TYPEs are valid QTYPEs. In addition, the
 /// following QTYPEs are defined:
@@ -105,6 +128,18 @@ impl TryFrom<u16> for QType {
 
             _ => return Err(DNSError::InvalidQType(value)),
         })
+    }
+}
+
+impl From<QType> for u16 {
+    fn from(value: QType) -> Self {
+        match value {
+            QType::Type(t) => t.into(),
+            QType::AXFR => 252,
+            QType::MAILB => 253,
+            QType::MAILA => 254,
+            QType::ALL => 255,
+        }
     }
 }
 
@@ -163,6 +198,53 @@ mod tests {
     fn try_from_u16_for_qtype_is_err_if_invalid() {
         for value in [0, 17, 251, 256, 0x0123, 0x4567, 0x89AB, 0xCDEF] {
             assert_eq!(QType::try_from(value), Err(DNSError::InvalidQType(value)));
+        }
+    }
+
+    #[test]
+    fn from_type_into_u16_is_correct() {
+        let pairs: [(Type, u16); 16] = [
+            (Type::A, 1),
+            (Type::NS, 2),
+            (Type::MD, 3),
+            (Type::MF, 4),
+            (Type::CNAME, 5),
+            (Type::SOA, 6),
+            (Type::MB, 7),
+            (Type::MG, 8),
+            (Type::MR, 9),
+            (Type::NULL, 10),
+            (Type::WKS, 11),
+            (Type::PTR, 12),
+            (Type::HINFO, 13),
+            (Type::MINFO, 14),
+            (Type::MX, 15),
+            (Type::TXT, 16),
+        ];
+        for (type_, value) in pairs {
+            assert_eq!(u16::from(type_), value);
+        }
+    }
+
+    #[test]
+    fn from_qtype_into_u16_is_correct() {
+        let pairs: [(QType, u16); 6] = [
+            (QType::Type(Type::A), 1),
+            (QType::Type(Type::TXT), 16),
+            (QType::AXFR, 252),
+            (QType::MAILB, 253),
+            (QType::MAILA, 254),
+            (QType::ALL, 255),
+        ];
+        for (qtype, value) in pairs {
+            assert_eq!(u16::from(qtype), value);
+        }
+    }
+
+    #[test]
+    fn type_u16_roundtrip() {
+        for value in 1u16..=16 {
+            assert_eq!(u16::from(Type::try_from(value).unwrap()), value);
         }
     }
 }

@@ -37,6 +37,17 @@ impl TryFrom<u16> for Class {
     }
 }
 
+impl From<Class> for u16 {
+    fn from(value: Class) -> Self {
+        match value {
+            Class::IN => 1,
+            Class::CS => 2,
+            Class::CH => 3,
+            Class::HS => 4,
+        }
+    }
+}
+
 /// QCLASS fields appear in the question part of a query. QCLASSes are a
 /// superset of CLASSes, hence all CLASSes are valid QCLASSes. In addition,
 /// the following QCLASSes are defined:
@@ -60,6 +71,15 @@ impl TryFrom<u16> for QClass {
 
             _ => return Err(DNSError::InvalidQClass(value)),
         })
+    }
+}
+
+impl From<QClass> for u16 {
+    fn from(value: QClass) -> Self {
+        match value {
+            QClass::Class(c) => c.into(),
+            QClass::ANY => 255,
+        }
     }
 }
 
@@ -105,6 +125,38 @@ mod tests {
     fn try_from_u16_for_qclass_is_err_if_invalid() {
         for value in [0, 5, 254, 256, 0x0123, 0x4567, 0x89AB, 0xCDEF] {
             assert_eq!(QClass::try_from(value), Err(DNSError::InvalidQClass(value)));
+        }
+    }
+
+    #[test]
+    fn from_class_into_u16_is_correct() {
+        let pairs: [(Class, u16); 4] = [
+            (Class::IN, 1),
+            (Class::CS, 2),
+            (Class::CH, 3),
+            (Class::HS, 4),
+        ];
+        for (class, value) in pairs {
+            assert_eq!(u16::from(class), value);
+        }
+    }
+
+    #[test]
+    fn from_qclass_into_u16_is_correct() {
+        let pairs: [(QClass, u16); 3] = [
+            (QClass::Class(Class::IN), 1),
+            (QClass::Class(Class::HS), 4),
+            (QClass::ANY, 255),
+        ];
+        for (qclass, value) in pairs {
+            assert_eq!(u16::from(qclass), value);
+        }
+    }
+
+    #[test]
+    fn class_u16_roundtrip() {
+        for value in 1u16..=4 {
+            assert_eq!(u16::from(Class::try_from(value).unwrap()), value);
         }
     }
 }
