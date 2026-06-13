@@ -1,4 +1,9 @@
+//! Error types for DNS message parsing and processing.
+
+/// Errors that can occur during DNS message parsing and processing.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum DNSError {
+    /// The byte slice is too short to contain a valid DNS header.
+    /// A DNS header requires exactly 12 bytes (RFC 1035, Section 4.1.1).
     HeaderTooShort,
 }
