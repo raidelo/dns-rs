@@ -8,6 +8,7 @@
 //! - [`errors`] — Error types for DNS message parsing and processing.
 //! - [`header`] — DNS message header ([`header::DNSHeader`]) and flags ([`header::Flags`]).
 
+pub mod class;
 pub mod errors;
 pub mod header;
 pub mod type_;

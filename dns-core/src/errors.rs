@@ -19,4 +19,16 @@ pub enum DNSError {
     ///
     /// RFC 1035, Section 3.2.3
     InvalidQType(u16),
+
+    /// The value does not correspond to any known DNS CLASS.
+    /// Contains the unrecognized value.
+    ///
+    /// RFC 1035, Section 3.2.4
+    InvalidClass(u16),
+
+    /// The value does not correspond to any known DNS QCLASS.
+    /// Contains the unrecognized value.
+    ///
+    /// RFC 1035, Section 3.2.5
+    InvalidQClass(u16),
 }
