@@ -11,4 +11,5 @@
 pub mod class;
 pub mod errors;
 pub mod header;
+pub mod label;
 pub mod type_;
