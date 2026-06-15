@@ -1,8 +1,28 @@
-use crate::{
-    errors::{DNSError, LabelError},
-    label::Label,
-};
+//! DNS domain name and label parsing and representation.
+//!
+//! A domain name is composed of a sequence of labels. Each label is preceded
+//! by a length byte indicating the number of octets that follow. Labels must
+//! start with a letter, end with a letter or digit, and contain only letters,
+//! digits, and hyphens as interior characters, with a maximum length of 63
+//! characters. The sequence is terminated by a zero-length label (`0x00`).
+//!
+//! This module provides [`Label`], which represents a single parsed label,
+//! and [`DomainName`], which represents a fully parsed domain name.
+//!
+//! RFC 1035, Section 2.3.1 (composition rules)
+//! RFC 1035, Section 2.3.4 (size limits)
+//! RFC 1035, Section 3.1 (wire structure)
 
+mod label;
+
+use crate::errors::{DNSError, LabelError};
+
+pub use label::Label;
+
+/// A fully parsed DNS domain name, represented as a sequence of [`Label`]s.
+///
+/// The terminating zero-length label is not stored — its presence is required
+/// during parsing but discarded after validation.
 #[derive(Debug, PartialEq)]
 pub struct DomainName(Vec<Label>);
 

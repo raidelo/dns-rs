@@ -1,18 +1,3 @@
-//! DNS label parsing and representation.
-//!
-//! A domain name is composed of a sequence of labels. Each label is preceded
-//! by a length byte indicating the number of octets that follow. Labels must
-//! start with a letter, end with a letter or digit, and contain only letters,
-//! digits, and hyphens as interior characters, with a maximum length of 63
-//! characters.
-//!
-//! This module provides [`Label`], which represents a single
-//! parsed label from a DNS name.
-//!
-//! RFC 1035, Section 2.3.1 (composition rules)
-//! RFC 1035, Section 2.3.4 (size limits)
-//! RFC 1035, Section 3.1 (wire structure)
-
 use std::ops::Deref;
 
 use crate::errors::LabelError;
