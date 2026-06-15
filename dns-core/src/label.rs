@@ -13,6 +13,8 @@
 //! RFC 1035, Section 2.3.4 (size limits)
 //! RFC 1035, Section 3.1 (wire structure)
 
+use std::ops::Deref;
+
 use crate::errors::LabelError;
 
 /// A single label in a domain name.
@@ -64,6 +66,14 @@ impl TryFrom<&[u8]> for Label {
         }
 
         Ok(Self(label))
+    }
+}
+
+impl Deref for Label {
+    type Target = [u8];
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
     }
 }
 
