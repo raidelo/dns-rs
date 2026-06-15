@@ -35,6 +35,11 @@ pub enum DNSError {
     /// The label is invalid. Contains the specific reason for the failure.
     /// See [`LabelError`] for details.
     InvalidLabel(LabelError),
+
+    /// The domain name is missing the zero-length terminator byte.
+    ///
+    /// RFC 1035, Section 3.1
+    MissingNameTerminator,
 }
 
 /// The specific reason a DNS label failed to parse.
