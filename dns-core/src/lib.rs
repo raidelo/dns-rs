@@ -7,6 +7,9 @@
 //!
 //! - [`errors`] — Error types for DNS message parsing and processing.
 //! - [`header`] — DNS message header ([`header::DNSHeader`]) and flags ([`header::Flags`]).
+//! - [`class`] — DNS record class ([`class::Class`]) and question class ([`class::QClass`]).
+//! - [`type_`] — DNS record type ([`type_::Type`]) and question type ([`type_::QType`]).
+//! - [`label`] — DNS label parsing and representation ([`label::Label`]).
 
 pub mod class;
 pub mod errors;
