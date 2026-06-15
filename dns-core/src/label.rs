@@ -76,7 +76,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn label_from_valid_bytes_retuns_ok() {
+    fn label_from_valid_bytes_returns_ok() {
         let bytes = b"\x3FABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-0123456789";
 
         assert_eq!(

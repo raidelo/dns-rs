@@ -33,7 +33,7 @@ pub enum DNSError {
     InvalidQClass(u16),
 
     /// The label is invalid. Contains the specific reason for the failure.
-    /// See [`InvalidLabelType`] for details.
+    /// See [`LabelError`] for details.
     InvalidLabel(LabelError),
 }
 
