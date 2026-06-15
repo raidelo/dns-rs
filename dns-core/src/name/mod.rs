@@ -26,28 +26,51 @@ pub use label::Label;
 #[derive(Debug, PartialEq)]
 pub struct DomainName(Vec<Label>);
 
-impl TryFrom<&[u8]> for DomainName {
-    type Error = DNSError;
-
-    fn try_from(value: &[u8]) -> Result<Self, Self::Error> {
-        let mut ptr = 0;
-
+impl DomainName {
+    /// Parses a [`DomainName`] from a byte slice starting at `offset`, advancing
+    /// `offset` by the number of bytes consumed (including the terminating
+    /// zero-length label).
+    ///
+    /// This method is intended for sequential parsing of DNS messages, where
+    /// multiple fields are parsed from the same buffer. For simple cases where
+    /// the slice contains exactly one domain name, use [`TryFrom<&[u8]>`] instead.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`DNSError::MissingNameTerminator`] if the slice is exhausted
+    /// before the terminating zero-length label is found.
+    ///
+    /// Returns [`DNSError::InvalidLabel`] if any label in the sequence fails
+    /// to parse.
+    pub fn parse(value: &[u8], offset: &mut usize) -> Result<Self, DNSError> {
         let mut array: Vec<Label> = Vec::new();
 
         loop {
-            match Label::try_from(&value[ptr..]) {
+            match Label::try_from(&value[*offset..]) {
                 Ok(label) => {
-                    ptr += label.len() + 1;
+                    *offset += label.len() + 1;
                     array.push(label);
                 }
 
-                Err(LabelError::ZeroLength) => break Ok(Self(array)),
+                Err(LabelError::ZeroLength) => {
+                    *offset += 1;
+                    break Ok(Self(array));
+                }
 
                 Err(LabelError::EmptySlice) => return Err(DNSError::MissingNameTerminator),
 
                 Err(err) => return Err(DNSError::InvalidLabel(err)),
             }
         }
+    }
+}
+
+impl TryFrom<&[u8]> for DomainName {
+    type Error = DNSError;
+
+    fn try_from(value: &[u8]) -> Result<Self, Self::Error> {
+        let mut offset = 0usize;
+        DomainName::parse(value, &mut offset)
     }
 }
 
@@ -77,5 +100,27 @@ mod tests {
             DomainName::try_from(&bytes[..]).unwrap_err(),
             DNSError::MissingNameTerminator,
         );
+    }
+
+    #[test]
+    fn domain_name_parse_advances_offset_correctly() {
+        let bytes = b"\x03www\x03com\x00\xFF\xFF";
+        //            |---4--|---4--|-1-| = 9 bytes consumed, \xFF\xFF untouched
+        let mut offset = 0;
+
+        DomainName::parse(bytes, &mut offset).unwrap();
+
+        assert_eq!(offset, 9);
+    }
+
+    #[test]
+    fn domain_name_parse_starts_at_given_offset() {
+        let bytes = b"\xFF\xFF\x03www\x03com\x00";
+        //            skip 2, then 9 bytes = offset ends at 11
+        let mut offset = 2;
+
+        DomainName::parse(bytes, &mut offset).unwrap();
+
+        assert_eq!(offset, 11);
     }
 }
