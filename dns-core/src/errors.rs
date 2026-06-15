@@ -40,6 +40,13 @@ pub enum DNSError {
     ///
     /// RFC 1035, Section 3.1
     MissingNameTerminator,
+
+    /// The byte slice ended unexpectedly while parsing a fixed-size field.
+    ///
+    /// This error occurs when the parser attempts to read a field with a known,
+    /// static byte length (such as a 2-byte QTYPE or QCLASS) but the buffer
+    /// does not contain enough remaining bytes.
+    UnexpectedEnd,
 }
 
 /// The specific reason a DNS label failed to parse.
