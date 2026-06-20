@@ -11,3 +11,15 @@ pub fn read_u16(value: &[u8], offset: &mut usize) -> Result<u16, DNSError> {
     *offset += 2;
     Ok(u16::from_be_bytes(bytes))
 }
+
+/// Helper function to read a 4-byte big-endian integer from the slice
+/// and advance the offset.
+pub fn read_u32(value: &[u8], offset: &mut usize) -> Result<u32, DNSError> {
+    let bytes = value
+        .get(*offset..*offset + 4)
+        .ok_or(DNSError::UnexpectedEnd)?
+        .try_into()
+        .expect("slice is guaranteed to be 4 bytes by .get()");
+    *offset += 4;
+    Ok(u32::from_be_bytes(bytes))
+}

@@ -16,5 +16,6 @@ pub mod errors;
 pub mod header;
 pub mod name;
 pub mod question;
+pub mod rr;
 pub mod type_;
 mod utils;
