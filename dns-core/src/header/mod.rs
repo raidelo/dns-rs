@@ -68,6 +68,32 @@ pub struct DNSHeader {
     arcount: u16,
 }
 
+impl DNSHeader {
+    pub fn id(&self) -> u16 {
+        self.id
+    }
+
+    pub fn flags(&self) -> Flags {
+        self.flags
+    }
+
+    pub fn qdcount(&self) -> u16 {
+        self.qdcount
+    }
+
+    pub fn ancount(&self) -> u16 {
+        self.ancount
+    }
+
+    pub fn nscount(&self) -> u16 {
+        self.nscount
+    }
+
+    pub fn arcount(&self) -> u16 {
+        self.arcount
+    }
+}
+
 /// Parses a [`DNSHeader`] from a byte slice in big-endian (network byte order),
 /// as specified in RFC 1035, Section 4.1.1.
 ///

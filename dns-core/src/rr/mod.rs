@@ -12,6 +12,8 @@
 //!
 //! RFC 1035, Section 4.1.3
 
+use std::ops::Deref;
+
 use crate::{
     class::Class,
     errors::DNSError,
@@ -83,6 +85,60 @@ impl TryFrom<&[u8]> for ResourceRecord {
     fn try_from(value: &[u8]) -> Result<Self, Self::Error> {
         let mut offset = 0usize;
         ResourceRecord::parse(value, &mut offset)
+    }
+}
+
+/// An Answer record.
+#[derive(Debug, PartialEq)]
+pub struct Answer(ResourceRecord);
+
+/// An Authority record.
+#[derive(Debug, PartialEq)]
+pub struct Authority(ResourceRecord);
+
+/// An Additional record.
+#[derive(Debug, PartialEq)]
+pub struct Additional(ResourceRecord);
+
+impl From<ResourceRecord> for Answer {
+    fn from(value: ResourceRecord) -> Self {
+        Self(value)
+    }
+}
+
+impl From<ResourceRecord> for Authority {
+    fn from(value: ResourceRecord) -> Self {
+        Self(value)
+    }
+}
+
+impl From<ResourceRecord> for Additional {
+    fn from(value: ResourceRecord) -> Self {
+        Self(value)
+    }
+}
+
+impl Deref for Answer {
+    type Target = ResourceRecord;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+impl Deref for Authority {
+    type Target = ResourceRecord;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+impl Deref for Additional {
+    type Target = ResourceRecord;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
     }
 }
 
