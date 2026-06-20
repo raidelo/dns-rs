@@ -11,7 +11,7 @@
 //!
 //! RFC 1035, Section 4.1.2 (Question section format)
 
-use crate::{class::QClass, errors::DNSError, name::DomainName, type_::QType};
+use crate::{class::QClass, errors::DNSError, name::DomainName, type_::QType, utils::read_u16};
 
 /// A fully parsed DNS question, representing a query for a specific record.
 #[derive(Debug, PartialEq)]
@@ -57,18 +57,6 @@ impl TryFrom<&[u8]> for DNSQuestion {
         let mut offset = 0usize;
         DNSQuestion::parse(value, &mut offset)
     }
-}
-
-/// Helper function to read a 2-byte big-endian integer from the slice
-/// and advance the offset.
-fn read_u16(value: &[u8], offset: &mut usize) -> Result<u16, DNSError> {
-    let bytes = value
-        .get(*offset..*offset + 2)
-        .ok_or(DNSError::UnexpectedEnd)?
-        .try_into()
-        .expect("slice is guaranteed to be 2 bytes by .get()");
-    *offset += 2;
-    Ok(u16::from_be_bytes(bytes))
 }
 
 #[cfg(test)]
